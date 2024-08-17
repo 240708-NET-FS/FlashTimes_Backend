@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace FlashTimes.Models;
+namespace FlashTimes.Entities;
 
 public class Card{
 

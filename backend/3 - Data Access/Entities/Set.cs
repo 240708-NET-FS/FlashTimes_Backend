@@ -1,4 +1,4 @@
-namespace FlashTimes.Models;
+namespace FlashTimes.Entities;
 public class Set
 {   
     [Key]
