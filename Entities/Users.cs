@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace FlashTimes.Models;
+namespace FlashTimes.Entities;
 
 public class Users
 {         
