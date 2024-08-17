@@ -3,18 +3,18 @@ using System.Text.Json.Serialization;
 
 namespace FlashTimes.Entities;
 
-public class Users
-{         
+public class User
+{
         [Key]
         public int UserID { get; set; }
 
         [Required]
         [StringLength(50, MinimumLength = 3)]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [Required]
         [StringLength(100, MinimumLength = 6)]
-        public string Password { get; set; }=string.Empty; 
+        public string Password { get; set; } = string.Empty;
 
-        
+
 }
