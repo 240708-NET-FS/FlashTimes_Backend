@@ -5,16 +5,14 @@ namespace FlashTimes.Entities;
 
 public class User
 {
-        [Key]
-        public int UserID { get; set; }
-
-        [Required]
-        [StringLength(50, MinimumLength = 3)]
+        public int UserId { get; set; }
         public string? Username { get; set; }
+        public string? Password { get; set; }
 
-        [Required]
-        [StringLength(100, MinimumLength = 6)]
-        public string Password { get; set; } = string.Empty;
+        // Navigation property
+        public ICollection<Set>? Sets { get; set; }
 
+        // Navigation property for Flashcards
+        public ICollection<Flashcard>? Flashcards { get; set; }
 
 }
