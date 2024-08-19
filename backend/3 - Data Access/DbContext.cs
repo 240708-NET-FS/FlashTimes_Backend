@@ -17,17 +17,51 @@ public class FlashTimesDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        //Configuring entity properties using Fluent API
+        // Configuring entity properties using Fluent API
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId); // Primary key
-            entity.Property(e => e.Username)
+            // Set the primary key
+            entity.HasKey(e => e.UserId);
+
+            // Configure UserName property
+            entity.Property(e => e.UserName)
                 .IsRequired()
                 .HasMaxLength(50);
-            entity.Property(e => e.Password)
+
+            // Configure FirstName property
+            entity.Property(e => e.FirstName)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(50);
+
+            // Configure LastName property
+            entity.Property(e => e.LastName)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Configure PasswordHash property
+            entity.Property(e => e.PasswordHash)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            // Configure Salt property
+            entity.Property(e => e.Salt)
+                .HasMaxLength(50); // Adjust as needed
+
+            // Configure CreatedAt property
+            entity.Property(e => e.CreatedAt)
+                .IsRequired();
+
+            // Configure relationships and navigation properties
+            entity.HasMany(e => e.Sets)
+                .WithOne(s => s.Author)
+                .HasForeignKey(s => s.UserId);
+
+            entity.HasMany(e => e.Flashcards)
+                .WithOne(f => f.Author)
+                .HasForeignKey(f => f.UserId);
         });
+
+
 
         modelBuilder.Entity<Set>(entity =>
         {
