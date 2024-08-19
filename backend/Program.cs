@@ -50,6 +50,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IFlashCardService, FlashCardService>();
 builder.Services.AddScoped<ISetService, SetService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IFlashCardRepository, FlashCardRepository>();
 builder.Services.AddScoped<ISetRepository, SetRepository>();
