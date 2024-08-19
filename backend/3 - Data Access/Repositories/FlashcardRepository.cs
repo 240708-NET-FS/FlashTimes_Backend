@@ -1,65 +1,77 @@
 using FlashTimes.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FlashTimes.Repositories;
 
-    public interface IFlashCardRepository
+public interface IFlashCardRepository
+{
+    Task<Flashcard?> GetFlashcardByIdAsync(int id);
+    Task<IEnumerable<Flashcard>> GetAllFlashcardsAsync();
+    Task<Flashcard> AddFlashcardAsync(Flashcard flashcard);
+    Task<Flashcard?> UpdateFlashcardAsync(Flashcard flashcard);
+    Task<bool> DeleteFlashcardAsync(int id);
+}
+
+public class FlashCardRepository : IFlashCardRepository
+{
+    private readonly FlashTimesDbContext _dbContext;
+
+    public FlashCardRepository(FlashTimesDbContext dbContext)
     {
-        Task<IEnumerable<Flashcard>> GetAllFlashcardsAsync();
-        Task<Flashcard?> GetFlashcardByIdAsync(int setId, string question);
-        Task AddFlashcardAsync(Flashcard flashcard);
-        Task UpdateFlashcardAsync(Flashcard flashcard);
-        Task DeleteFlashcardAsync(int setId, string question);
+        _dbContext = dbContext;
     }
 
-    public class FlashCardRepository : IFlashCardRepository
+    public async Task<Flashcard?> GetFlashcardByIdAsync(int id)
     {
-        private readonly FlashTimesDbContext _dbContext;
-
-        public FlashCardRepository(FlashTimesDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
-        // Retrieves all flashcards from the database
-        public async Task<IEnumerable<Flashcard>> GetAllFlashcardsAsync()
-        {
-            return await _dbContext.Flashcards.ToListAsync();
-        }
-
-        // Retrieves a specific flashcard by its SetId and Question
-        public async Task<Flashcard?> GetFlashcardByIdAsync(int setId, string question)
-        {
-            return await _dbContext.Flashcards
-                .FirstOrDefaultAsync(fc => fc.SetId == setId && fc.Question == question);
-        }
-
-        // Adds a new flashcard to the database
-        public async Task AddFlashcardAsync(Flashcard flashcard)
-        {
-            _dbContext.Flashcards.Add(flashcard);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        // Updates an existing flashcard in the database
-        public async Task UpdateFlashcardAsync(Flashcard flashcard)
-        {
-            _dbContext.Flashcards.Update(flashcard);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        // Deletes a flashcard from the database
-        public async Task DeleteFlashcardAsync(int setId, string question)
-        {
-            var flashcard = await GetFlashcardByIdAsync(setId, question);
-            if (flashcard != null)
-            {
-                _dbContext.Flashcards.Remove(flashcard);
-                await _dbContext.SaveChangesAsync();
-            }
-        }
+        // Use FindAsync, which returns null if not found
+        return await _dbContext.Flashcards.FindAsync(id);
     }
 
+    public async Task<IEnumerable<Flashcard>> GetAllFlashcardsAsync()
+    {
+        return await _dbContext.Flashcards.ToListAsync();
+    }
 
+    public async Task<Flashcard> AddFlashcardAsync(Flashcard flashcard)
+    {
+        _dbContext.Flashcards.Add(flashcard);
+        await _dbContext.SaveChangesAsync();
+        return flashcard;
+    }
 
+    public async Task<Flashcard?> UpdateFlashcardAsync(Flashcard flashcard)
+    {
+        // Attach the entity to the context
+        _dbContext.Flashcards.Update(flashcard);
+        // Ensure the entity is found in the database before saving
+        var existingFlashcard = await _dbContext.Flashcards.FindAsync(flashcard.FlashcardId);
+
+        if (existingFlashcard == null)
+        {
+            return null; // Return null if the flashcard was not found
+        }
+
+        // Update the entity
+        existingFlashcard.Question = flashcard.Question;
+        existingFlashcard.Answer = flashcard.Answer;
+        existingFlashcard.SetId = flashcard.SetId;
+        existingFlashcard.UserId = flashcard.UserId;
+
+        await _dbContext.SaveChangesAsync();
+        return existingFlashcard;
+    }
+
+    public async Task<bool> DeleteFlashcardAsync(int id)
+    {
+        var flashcard = await _dbContext.Flashcards.FindAsync(id);
+        if (flashcard == null)
+            return false;
+
+        _dbContext.Flashcards.Remove(flashcard);
+        await _dbContext.SaveChangesAsync();
+        return true;
+    }
+}
 

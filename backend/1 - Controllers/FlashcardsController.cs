@@ -1,6 +1,8 @@
 using FlashTimes.Entities;
 using FlashTimes.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FlashTimes.Controllers;
 
@@ -8,70 +10,67 @@ namespace FlashTimes.Controllers;
 [Route("api/[controller]")]
 public class FlashCardsController : ControllerBase
 {
-    private readonly IFlashCardService _flashCardService;
+    private readonly IFlashCardService _flashcardService;
 
-    public FlashCardsController(IFlashCardService flashCardService)
+    public FlashCardsController(IFlashCardService flashcardService)
     {
-        _flashCardService = flashCardService;
+        _flashcardService = flashcardService;
     }
 
-    // GET: api/FlashCard
-    // Retrieves all flashcards
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Flashcard>>> GetAllFlashcards()
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Flashcard>> GetFlashcardByIdAsync(int id)
     {
-        var flashcards = await _flashCardService.GetAllFlashcardsAsync();
-        return Ok(flashcards);
-    }
+        var flashcard = await _flashcardService.GetFlashcardByIdAsync(id);
 
-    // GET: api/FlashCard/5?question=What is OOP?
-    // Retrieves a specific flashcard by its SetId and Question
-    [HttpGet("{setId}")]
-    public async Task<ActionResult<Flashcard>> GetFlashcard(int setId, [FromQuery] string question)
-    {
-        var flashcard = await _flashCardService.GetFlashcardByIdAsync(setId, question);
         if (flashcard == null)
-        {
             return NotFound();
-        }
+
         return Ok(flashcard);
     }
 
-    // POST: api/FlashCard
-    // Adds a new flashcard
-    [HttpPost]
-    public async Task<ActionResult> AddFlashcard(Flashcard flashcard)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Flashcard>>> GetAllFlashcardsAsync()
     {
-        await _flashCardService.AddFlashcardAsync(flashcard);
-        return CreatedAtAction(nameof(GetFlashcard), new { setId = flashcard.SetId, question = flashcard.Question }, flashcard);
+        var flashcards = await _flashcardService.GetAllFlashcardsAsync();
+        return Ok(flashcards);
     }
 
-    // PUT: api/FlashCard/5?question=What is OOP?
-    // Updates an existing flashcard
-    [HttpPut("{setId}")]
-    public async Task<IActionResult> UpdateFlashcard(int setId, [FromQuery] string question, Flashcard flashcard)
+    [HttpPost]
+    public async Task<ActionResult<Flashcard>> AddFlashcardAsync(Flashcard flashcard)
     {
-        if (setId != flashcard.SetId || question != flashcard.Question)
+        var createdFlashcard = await _flashcardService.AddFlashcardAsync(flashcard);
+
+        if (createdFlashcard == null)
         {
-            return BadRequest();
+            return Problem("Failed to create flashcard.");
         }
 
-        await _flashCardService.UpdateFlashcardAsync(flashcard);
-        return NoContent();
+        return CreatedAtAction(nameof(GetFlashcardByIdAsync), new { id = createdFlashcard.FlashcardId }, createdFlashcard);
     }
 
-    // DELETE: api/FlashCard/5?question=What is OOP?
-    // Deletes a flashcard
-    [HttpDelete("{setId}")]
-    public async Task<IActionResult> DeleteFlashcard(int setId, [FromQuery] string question)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<Flashcard>> UpdateFlashcardAsync(int id, Flashcard flashcard)
     {
-        var flashcard = await _flashCardService.GetFlashcardByIdAsync(setId, question);
-        if (flashcard == null)
+        if (id != flashcard.FlashcardId)
+            return BadRequest("Flashcard ID mismatch");
+
+        var updatedFlashcard = await _flashcardService.UpdateFlashcardAsync(flashcard);
+
+        if (updatedFlashcard == null)
         {
             return NotFound();
         }
 
-        await _flashCardService.DeleteFlashcardAsync(setId, question);
+        return Ok(updatedFlashcard);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteFlashcardAsync(int id)
+    {
+        var result = await _flashcardService.DeleteFlashcardAsync(id);
+        if (!result)
+            return NotFound();
+
         return NoContent();
     }
 }
