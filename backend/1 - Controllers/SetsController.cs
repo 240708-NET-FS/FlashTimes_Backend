@@ -6,11 +6,11 @@ namespace FlashTimes.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class SetController : ControllerBase
+public class SetsController : ControllerBase
 {
     private readonly ISetService _setService;
 
-    public SetController(ISetService setService)
+    public SetsController(ISetService setService)
     {
         _setService = setService;
     }
