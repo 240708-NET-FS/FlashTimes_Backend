@@ -54,15 +54,16 @@ namespace backend.Migrations
                 name: "Flashcards",
                 columns: table => new
                 {
-                    Question = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    FlashcardId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Question = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Answer = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SetId = table.Column<int>(type: "int", nullable: false),
-                    FlashcardId = table.Column<int>(type: "int", nullable: false),
-                    Answer = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Flashcards", x => new { x.SetId, x.Question });
+                    table.PrimaryKey("PK_Flashcards", x => x.FlashcardId);
                     table.ForeignKey(
                         name: "FK_Flashcards_Sets_SetId",
                         column: x => x.SetId,
@@ -76,6 +77,11 @@ namespace backend.Migrations
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Flashcards_SetId",
+                table: "Flashcards",
+                column: "SetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Flashcards_UserId",

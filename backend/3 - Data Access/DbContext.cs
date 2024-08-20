@@ -83,17 +83,28 @@ public class FlashTimesDbContext : DbContext
         });
 
         modelBuilder.Entity<Flashcard>(entity =>
-        {
-            entity.HasKey(e => new { e.SetId, e.Question }); // Composite key
-            entity.Property(e => e.Answer)
-                .IsRequired();
+{
+    // Setting FlashcardId as the primary key
+    entity.HasKey(e => e.FlashcardId);
 
-            // Set cascade delete behavior to restrict deletion cycles
-            entity.HasOne(e => e.Author) // Author gets resolved to User as in Author is of type User
-                .WithMany(u => u.Flashcards) // The User Entity will contain the navigation property for Flashcards
-                .HasForeignKey(e => e.UserId) // Foreign key relationship
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
-        });
+    // Configuring the Question property without any max length or required constraints
+    entity.Property(e => e.Question);
+
+    // Configuring the Answer property without any required constraints
+    entity.Property(e => e.Answer);
+
+    // Configuring the relationship with the Set entity
+    entity.HasOne(e => e.Set)
+        .WithMany(s => s.Flashcards) // A Set can have many Flashcards
+        .HasForeignKey(e => e.SetId) // Flashcard references Set via SetId
+        .OnDelete(DeleteBehavior.Cascade); // If a Set is deleted, all associated Flashcards are also deleted
+
+    // Configuring the relationship with the User entity (Author)
+    entity.HasOne(e => e.Author)
+        .WithMany(u => u.Flashcards) // A User (Author) can have many Flashcards
+        .HasForeignKey(e => e.UserId) // Flashcard references User via UserId
+        .OnDelete(DeleteBehavior.Restrict); // Prevents deletion of a User if they have associated Flashcards
+});
 
         // Seed data or additional configurations will go here later on.
     }
