@@ -24,24 +24,27 @@ namespace backend.Migrations
 
             modelBuilder.Entity("FlashTimes.Entities.Flashcard", b =>
                 {
-                    b.Property<int>("SetId")
+                    b.Property<int>("FlashcardId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Question")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FlashcardId"));
 
                     b.Property<string>("Answer")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FlashcardId")
+                    b.Property<string>("Question")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SetId")
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("SetId", "Question");
+                    b.HasKey("FlashcardId");
+
+                    b.HasIndex("SetId");
 
                     b.HasIndex("UserId");
 
@@ -117,7 +120,7 @@ namespace backend.Migrations
             modelBuilder.Entity("FlashTimes.Entities.Flashcard", b =>
                 {
                     b.HasOne("FlashTimes.Entities.Set", "Set")
-                        .WithMany()
+                        .WithMany("Flashcards")
                         .HasForeignKey("SetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -142,6 +145,11 @@ namespace backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("FlashTimes.Entities.Set", b =>
+                {
+                    b.Navigation("Flashcards");
                 });
 
             modelBuilder.Entity("FlashTimes.Entities.User", b =>

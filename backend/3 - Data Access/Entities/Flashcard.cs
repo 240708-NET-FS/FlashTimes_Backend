@@ -9,11 +9,8 @@ public class Flashcard
         [Key]
         public int FlashcardId { get; set; }
 
-        [Required]
-        [MaxLength(200)]
         public string? Question { get; set; }
 
-        [Required]
         public string? Answer { get; set; }
 
         // Foreign key to the Set entity
