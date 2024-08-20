@@ -52,16 +52,19 @@ public class FlashTimesDbContext : DbContext
                 .IsRequired();
 
             // Configure relationships and navigation properties
+
+            // Set cascade delete behavior to restrict deletion cycles
             entity.HasMany(e => e.Sets)
                 .WithOne(s => s.Author)
-                .HasForeignKey(s => s.UserId);
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
 
+            // Set cascade delete behavior to restrict deletion cycles
             entity.HasMany(e => e.Flashcards)
                 .WithOne(f => f.Author)
-                .HasForeignKey(f => f.UserId);
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
         });
-
-
 
         modelBuilder.Entity<Set>(entity =>
         {
@@ -71,9 +74,12 @@ public class FlashTimesDbContext : DbContext
                 .HasMaxLength(100);
             entity.Property(e => e.SetLength)
                 .IsRequired();
+
+            // Set cascade delete behavior to restrict deletion cycles
             entity.HasOne(e => e.Author)
                 .WithMany(u => u.Sets)
-                .HasForeignKey(e => e.UserId); // Foreign key relationship
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
         });
 
         modelBuilder.Entity<Flashcard>(entity =>
@@ -81,12 +87,14 @@ public class FlashTimesDbContext : DbContext
             entity.HasKey(e => new { e.SetId, e.Question }); // Composite key
             entity.Property(e => e.Answer)
                 .IsRequired();
-            entity.HasOne(e => e.Author) //Author gets resolved to User as in Author is of type User
-                .WithMany(u => u.Flashcards) //The User Entity will contain the navigation property for Flashcards
-                .HasForeignKey(e => e.UserId); // Foreign key relationship
+
+            // Set cascade delete behavior to restrict deletion cycles
+            entity.HasOne(e => e.Author) // Author gets resolved to User as in Author is of type User
+                .WithMany(u => u.Flashcards) // The User Entity will contain the navigation property for Flashcards
+                .HasForeignKey(e => e.UserId) // Foreign key relationship
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
         });
 
         // Seed data or additional configurations will go here later on.
     }
 }
-
