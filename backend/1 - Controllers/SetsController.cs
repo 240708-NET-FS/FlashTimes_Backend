@@ -37,7 +37,31 @@ public class SetsController : ControllerBase
             return NotFound(); // Return 404 if set is not found.
         }
 
-        return Ok(set);
+        //Map set to GetSetByIdResponseDto to hide sensitive User hash and salt
+        var setDto = new GetSetByIdResponseDto
+        {
+            SetId = set.SetId,
+            SetName = set.SetName,
+            SetLength = set.SetLength,
+            UserId = set.UserId,
+            Flashcards = set.Flashcards.Select(f => new FlashcardDto
+            {
+                FlashcardId = f.FlashcardId,
+                Question = f.Question,
+                Answer = f.Answer
+            }).ToList(),
+            Author = new UserDto
+            {
+                UserId = set.Author.UserId,
+                UserName = set.Author.UserName,
+                FirstName = set.Author.FirstName,
+                LastName = set.Author.LastName,
+                CreatedAt = set.Author.CreatedAt
+            }
+        };
+
+
+        return Ok(setDto);
     }
 
     // POST: api/Set
