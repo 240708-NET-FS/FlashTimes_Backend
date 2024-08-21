@@ -43,21 +43,20 @@ public class SetsController : ControllerBase
             SetId = set.SetId,
             SetName = set.SetName,
             SetLength = set.SetLength,
-            UserId = set.UserId,
             Flashcards = set.Flashcards.Select(f => new FlashcardDto
             {
                 FlashcardId = f.FlashcardId,
                 Question = f.Question,
                 Answer = f.Answer
             }).ToList(),
-            Author = new UserDto
+            Author = set.Author != null ? new UserDto //Check to see if Author is not null first
             {
                 UserId = set.Author.UserId,
                 UserName = set.Author.UserName,
                 FirstName = set.Author.FirstName,
                 LastName = set.Author.LastName,
                 CreatedAt = set.Author.CreatedAt
-            }
+            } : null //If Author is null then return Author property with null
         };
 
 
