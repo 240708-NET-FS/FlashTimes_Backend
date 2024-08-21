@@ -43,11 +43,18 @@ public class SetRepository : ISetRepository
 
     public async Task<Set?> UpdateSetAsync(Set set)
     {
-        // Update an existing set in the database.
+        // Check if the set exists in the database.
         var existingSet = await _context.Sets.FindAsync(set.SetId);
         if (existingSet == null)
         {
             return null; // Return null if the set doesn't exist.
+        }
+
+        // Check if the user exists in the database.
+        var userExists = await _context.Users.AnyAsync(u => u.UserId == set.UserId);
+        if (!userExists)
+        {
+            throw new Exception("The specified user does not exist."); // Throw an exception if the user doesn't exist.
         }
 
         // Update the fields of the existing set with the new values.
