@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using FlashTimes.Entities;
 using FlashTimes.Services;
+using FlashTimes.Models.DTOs;
 
 namespace FlashTimes.Controllers;
 
@@ -41,12 +42,23 @@ public class SetsController : ControllerBase
 
     // POST: api/Set
     [HttpPost]
-    public async Task<ActionResult<Set>> CreateSet(Set set)
+    public async Task<IActionResult> CreateSet([FromBody] CreateSetDto dto)
     {
-        // Create a new set and save it to the database.
-        var createdSet = await _setService.CreateSetAsync(set);
-        return CreatedAtAction(nameof(GetSet), new { id = createdSet.SetId }, createdSet);
+        if (dto == null || dto.UserId <= 0 || string.IsNullOrEmpty(dto.SetName))
+        {
+            return BadRequest("Invalid data.");
+        }
+
+        var result = await _setService.CreateSetAsync(dto);
+        if (result == null)
+        {
+            return BadRequest("Failed to create set.");
+        }
+
+        return CreatedAtAction(nameof(GetSet), new { id = result.SetId }, result);
     }
+
+
 
     // PUT: api/Set/5
     [HttpPut("{id}")]
