@@ -1,5 +1,7 @@
 using FlashTimes.Entities;
 using FlashTimes.Repositories;
+using FlashTimes.Models.DTOs;
+using FlashTimes.Services;
 
 namespace FlashTimes.Services;
 
@@ -7,7 +9,7 @@ public interface ISetService
 {
     Task<IEnumerable<Set>> GetAllSetsAsync();
     Task<Set?> GetSetByIdAsync(int id);
-    Task<Set> CreateSetAsync(Set set);
+    Task<Set> CreateSetAsync(CreateSetDto dto);
     Task<Set?> UpdateSetAsync(Set set);
     Task<bool> DeleteSetAsync(int id);
 }
@@ -15,10 +17,12 @@ public interface ISetService
 public class SetService : ISetService
 {
     private readonly ISetRepository _setRepository;
+    private readonly IUserRepository _userRepository;
 
-    public SetService(ISetRepository setRepository)
+    public SetService(ISetRepository setRepository, IUserRepository userRepository)
     {
         _setRepository = setRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<IEnumerable<Set>> GetAllSetsAsync()
@@ -33,11 +37,25 @@ public class SetService : ISetService
         return await _setRepository.GetSetByIdAsync(id);
     }
 
-    public async Task<Set> CreateSetAsync(Set set)
+
+    public async Task<Set> CreateSetAsync(CreateSetDto dto)
     {
-        // Add a new set to the repository and save changes.
+        var userExists = await _userRepository.GetUserByIdAsync(dto.UserId);
+        if (userExists == null)
+        {
+            return null;
+        }
+
+        var set = new Set
+        {
+            SetName = dto.SetName,
+            SetLength = dto.SetLength,
+            UserId = dto.UserId
+        };
+
         return await _setRepository.CreateSetAsync(set);
     }
+
 
     public async Task<Set?> UpdateSetAsync(Set set)
     {
