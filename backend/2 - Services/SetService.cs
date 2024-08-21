@@ -59,15 +59,6 @@ public class SetService : ISetService
 
     public async Task<Set?> UpdateSetAsync(Set set)
     {
-        //Map DTO to Set
-        /*
-                var set = new Set
-                {
-                    SetName = dto.SetName,
-                    UserId = dto.UserId
-
-                };
-        */
 
         // Update an existing set in the repository.
         return await _setRepository.UpdateSetAsync(set);

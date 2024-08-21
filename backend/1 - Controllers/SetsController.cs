@@ -83,7 +83,7 @@ public class SetsController : ControllerBase
         {
             UserId = result.UserId,
             SetName = result.SetName
-            // SetLength = result.SetLength
+
         };
 
         return CreatedAtAction(nameof(GetSet), new
@@ -98,12 +98,6 @@ public class SetsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateSet(int id, UpdateSetDto set)
     {
-        // Update an existing set identified by its ID.
-        /*  if (id != set.SetId)
-          {
-              return BadRequest(); // Return 400 if ID in the URL doesn't match the ID in the entity.
-          }
-  */
 
         //Map UpdateSetDto to Set entity
         var setToUpdate = new Set
