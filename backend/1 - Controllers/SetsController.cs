@@ -96,15 +96,25 @@ public class SetsController : ControllerBase
 
     // PUT: api/Set/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSet(int id, Set set)
+    public async Task<IActionResult> UpdateSet(int id, UpdateSetDto set)
     {
         // Update an existing set identified by its ID.
-        if (id != set.SetId)
-        {
-            return BadRequest(); // Return 400 if ID in the URL doesn't match the ID in the entity.
-        }
+        /*  if (id != set.SetId)
+          {
+              return BadRequest(); // Return 400 if ID in the URL doesn't match the ID in the entity.
+          }
+  */
 
-        var updatedSet = await _setService.UpdateSetAsync(set);
+        //Map UpdateSetDto to Set entity
+        var setToUpdate = new Set
+        {
+            SetId = id, //use the id from the URL
+            SetName = set.SetName,
+            UserId = set.UserId
+        };
+
+        var updatedSet = await _setService.UpdateSetAsync(setToUpdate);
+
 
         if (updatedSet == null)
         {
