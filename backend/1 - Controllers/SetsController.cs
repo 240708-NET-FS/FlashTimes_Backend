@@ -55,7 +55,18 @@ public class SetsController : ControllerBase
             return BadRequest("Failed to create set.");
         }
 
-        return CreatedAtAction(nameof(GetSet), new { id = result.SetId }, result);
+        //Return DTO response instead of whole Set entity because Set entity has sensitive info and could be too large
+        var responseDto = new CreateSetDto
+        {
+            UserId = result.UserId,
+            SetName = result.SetName
+            // SetLength = result.SetLength
+        };
+
+        return CreatedAtAction(nameof(GetSet), new
+        {
+            id = result.SetId
+        }, responseDto);
     }
 
 
