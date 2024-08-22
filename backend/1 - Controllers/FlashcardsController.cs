@@ -1,5 +1,6 @@
 using FlashTimes.Entities;
 using FlashTimes.Services;
+using FlashTimes.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -36,10 +37,22 @@ public class FlashCardsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Flashcard>> AddFlashcardAsync(Flashcard flashcard)
+    public async Task<ActionResult<Flashcard>> AddFlashcardAsync(FlashcardDtoRequest flashcardDto)
     {
+
+        //Map FlashCardDtoRequest to Flashcard entity
+        var flashcard = new Flashcard
+        {
+            SetId = flashcardDto.SetId,
+            UserId = flashcardDto.UserId,
+            Question = flashcardDto.Question,
+            Answer = flashcardDto.Answer
+        };
+
+        //Pass Flashcard entity to the Service layer
         var createdFlashcard = await _flashcardService.AddFlashcardAsync(flashcard);
 
+        //Check to see if Flashcard was created
         if (createdFlashcard == null)
         {
             return Problem("Failed to create flashcard.");
