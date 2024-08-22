@@ -72,13 +72,22 @@ public class SetsController : ControllerBase
             return BadRequest("Invalid data.");
         }
 
-        var result = await _setService.CreateSetAsync(dto);
+        //Map CreateSetDto to Set entity
+        var set = new Set
+        {
+            SetName = dto.SetName,
+            UserId = dto.UserId
+
+        };
+
+        var result = await _setService.CreateSetAsync(set);
         if (result == null)
         {
             return BadRequest("Failed to create set.");
         }
 
         //Return DTO response instead of whole Set entity because Set entity has sensitive info and could be too large
+        //Reusing CreateSetDto for response
         var responseDto = new CreateSetDto
         {
             UserId = result.UserId,

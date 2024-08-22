@@ -9,7 +9,7 @@ public interface ISetService
 {
     Task<IEnumerable<Set>> GetAllSetsAsync();
     Task<Set?> GetSetByIdAsync(int id);
-    Task<Set?> CreateSetAsync(CreateSetDto dto);
+    Task<Set?> CreateSetAsync(Set set);
     Task<Set?> UpdateSetAsync(Set set);
     Task<bool> DeleteSetAsync(int id);
 }
@@ -38,20 +38,14 @@ public class SetService : ISetService
     }
 
 
-    public async Task<Set?> CreateSetAsync(CreateSetDto dto)
+    public async Task<Set?> CreateSetAsync(Set set)
     {
-        var userExists = await _userRepository.GetUserByIdAsync(dto.UserId);
+        var userExists = await _userRepository.GetUserByIdAsync(set.UserId);
         if (userExists == null)
         {
             return null;
         }
 
-        var set = new Set
-        {
-            SetName = dto.SetName,
-            UserId = dto.UserId
-
-        };
 
         return await _setRepository.CreateSetAsync(set);
     }
