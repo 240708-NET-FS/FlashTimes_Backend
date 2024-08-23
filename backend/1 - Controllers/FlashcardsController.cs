@@ -62,20 +62,34 @@ public class FlashCardsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Flashcard>> UpdateFlashcardAsync(int id, Flashcard flashcard)
+    public async Task<ActionResult<Flashcard>> UpdateFlashcardAsync(int id, UpdateFlashcardRequestDto flashcardDto)
     {
-        if (id != flashcard.FlashcardId)
-            return BadRequest("Flashcard ID mismatch");
+       
+       
+       
+        var flashcard = new Flashcard
+    {
+        FlashcardId = id, // Ensure the ID matches the ID in the route
+        SetId = flashcardDto.SetId,
+        UserId = flashcardDto.UserId,
+        Question = flashcardDto.Question,
+        Answer = flashcardDto.Answer
+    };
 
-        var updatedFlashcard = await _flashcardService.UpdateFlashcardAsync(flashcard);
 
-        if (updatedFlashcard == null)
-        {
-            return NotFound();
-        }
+    // Pass the updated Flashcard entity to the Service layer
+    var updatedFlashcard = await _flashcardService.UpdateFlashcardAsync(flashcard);
 
-        return Ok(updatedFlashcard);
+    // Check to see if Flashcard was updated
+    if (updatedFlashcard == null)
+    {
+        return NotFound(); // Flashcard with given ID not found
     }
+
+    return Ok(updatedFlashcard); // Return the updated Flashcard
+    }
+
+        
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteFlashcardAsync(int id)

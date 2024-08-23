@@ -30,7 +30,8 @@ public class FlashCardService : IFlashCardService
 
         // Handle null case if needed (e.g., logging or throwing exception)
         if (flashcard == null)
-        {
+        { 
+            return null;
             // Optional: log the null case or throw a custom exception
             // throw new NotFoundException($"Flashcard with ID {id} not found.");
         }
@@ -61,14 +62,33 @@ public class FlashCardService : IFlashCardService
         {
             throw new ArgumentNullException(nameof(flashcard));
         }
+        
 
-        var updatedFlashcard = await _flashcardRepository.UpdateFlashcardAsync(flashcard);
+        //validate user who wants to make update with user who owns Flashcard
+            //retrieve the flashcard by id from database
+                var existingFlashcard = await _flashcardRepository.GetFlashcardByIdAsync(flashcard.FlashcardId);
+                if (existingFlashcard == null){
+                    throw new ArgumentException("Could not find Flashcard by Id");
+                }
+            //compare user id from request to user id of flashcard owner from database
+                if(existingFlashcard.UserId != flashcard.UserId){
+                    throw new ArgumentException("This user does not own the Flashcard");
+
+                }
+              
+              //update existing flashcard with new information
+              existingFlashcard.Question = flashcard.Question;
+              existingFlashcard.Answer = flashcard.Answer;
+
+              //pass updated existing flashcard to update method
+              var updatedFlashcard = await _flashcardRepository.UpdateFlashcardAsync(existingFlashcard);
 
         // Handle case where flashcard could not be updated
         if (updatedFlashcard == null)
         {
             // Optional: log or throw a custom exception
             // throw new NotFoundException($"Flashcard with ID {flashcard.FlashcardId} not found.");
+            throw new Exception("Unable to update Flashcard");
         }
 
         return updatedFlashcard;
