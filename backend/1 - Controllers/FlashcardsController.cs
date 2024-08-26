@@ -19,7 +19,9 @@ public class FlashCardsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [ActionName(nameof(GetFlashcardByIdAsync))] //This needs to be added so CreatedAtAction method can be used in AddFlashcardAsync response
     public async Task<ActionResult<Flashcard>> GetFlashcardByIdAsync(int id)
+
     {
         var flashcard = await _flashcardService.GetFlashcardByIdAsync(id);
 
@@ -59,37 +61,38 @@ public class FlashCardsController : ControllerBase
         }
 
         return CreatedAtAction(nameof(GetFlashcardByIdAsync), new { id = createdFlashcard.FlashcardId }, createdFlashcard);
+
     }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<Flashcard>> UpdateFlashcardAsync(int id, UpdateFlashcardRequestDto flashcardDto)
     {
-       
-       
-       
+
+
+
         var flashcard = new Flashcard
-    {
-        FlashcardId = id, // Ensure the ID matches the ID in the route
-        SetId = flashcardDto.SetId,
-        UserId = flashcardDto.UserId,
-        Question = flashcardDto.Question,
-        Answer = flashcardDto.Answer
-    };
+        {
+            FlashcardId = id, // Ensure the ID matches the ID in the route
+            SetId = flashcardDto.SetId,
+            UserId = flashcardDto.UserId,
+            Question = flashcardDto.Question,
+            Answer = flashcardDto.Answer
+        };
 
 
-    // Pass the updated Flashcard entity to the Service layer
-    var updatedFlashcard = await _flashcardService.UpdateFlashcardAsync(flashcard);
+        // Pass the updated Flashcard entity to the Service layer
+        var updatedFlashcard = await _flashcardService.UpdateFlashcardAsync(flashcard);
 
-    // Check to see if Flashcard was updated
-    if (updatedFlashcard == null)
-    {
-        return NotFound(); // Flashcard with given ID not found
+        // Check to see if Flashcard was updated
+        if (updatedFlashcard == null)
+        {
+            return NotFound(); // Flashcard with given ID not found
+        }
+
+        return Ok(updatedFlashcard); // Return the updated Flashcard
     }
 
-    return Ok(updatedFlashcard); // Return the updated Flashcard
-    }
 
-        
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteFlashcardAsync(int id)
