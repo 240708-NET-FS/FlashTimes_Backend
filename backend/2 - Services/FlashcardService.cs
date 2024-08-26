@@ -17,10 +17,14 @@ public interface IFlashCardService
 public class FlashCardService : IFlashCardService
 {
     private readonly IFlashCardRepository _flashcardRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ISetRepository _setRepository;
 
-    public FlashCardService(IFlashCardRepository flashcardRepository)
+    public FlashCardService(IFlashCardRepository flashcardRepository, IUserRepository userRepository, ISetRepository setRepository)
     {
         _flashcardRepository = flashcardRepository;
+        _userRepository = userRepository;
+        _setRepository = setRepository;
     }
 
     public async Task<Flashcard?> GetFlashcardByIdAsync(int id)
@@ -44,11 +48,26 @@ public class FlashCardService : IFlashCardService
 
     public async Task<Flashcard?> AddFlashcardAsync(Flashcard flashcard)
     {
-        // Validate flashcard before adding
+        // Validate flashcard is not null before adding
         if (flashcard == null)
         {
             throw new ArgumentNullException(nameof(flashcard));
         }
+
+        // Check to see if the user who wants to add the flashcard exists
+        var user = await _userRepository.GetUserByIdAsync(flashcard.UserId);
+        if (user == null)
+        {
+            throw new InvalidOperationException("User does not exist");
+        }
+
+        //Check to see if the set exists before adding
+        var set = await _setRepository.GetSetByIdAsync(flashcard.SetId);
+        if (set == null)
+        {
+            throw new InvalidOperationException("Set does not exist");
+        }
+
 
         return await _flashcardRepository.AddFlashcardAsync(flashcard);
     }
