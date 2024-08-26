@@ -20,7 +20,7 @@ public class FlashCardsController : ControllerBase
 
     [HttpGet("{id}")]
     [ActionName(nameof(GetFlashcardByIdAsync))] //This needs to be added so CreatedAtAction method can be used in AddFlashcardAsync response
-    public async Task<ActionResult<Flashcard>> GetFlashcardByIdAsync(int id)
+    public async Task<ActionResult<FlashcardDto>> GetFlashcardByIdAsync(int id)
 
     {
         var flashcard = await _flashcardService.GetFlashcardByIdAsync(id);
@@ -28,14 +28,38 @@ public class FlashCardsController : ControllerBase
         if (flashcard == null)
             return NotFound();
 
-        return Ok(flashcard);
+
+        //Map flashcard to FlashcardDto
+        var GetFlashcardByIdAsyncDto = new FlashcardDto
+        {
+            FlashcardId = flashcard.FlashcardId,
+            Question = flashcard.Question,
+            Answer = flashcard.Answer,
+            SetId = flashcard.SetId,
+            UserId = flashcard.UserId
+        };
+
+
+        return Ok(GetFlashcardByIdAsyncDto);
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Flashcard>>> GetAllFlashcardsAsync()
     {
         var flashcards = await _flashcardService.GetAllFlashcardsAsync();
-        return Ok(flashcards);
+
+        // Map each Flashcard entity to FlashcardDto
+        var flashcardDtos = flashcards.Select(f => new FlashcardDto
+        {
+            FlashcardId = f.FlashcardId,
+            Question = f.Question,
+            Answer = f.Answer,
+            SetId = f.SetId,
+            UserId = f.UserId
+        }).ToList();
+
+
+        return Ok(flashcardDtos);
     }
 
     [HttpPost]
@@ -60,14 +84,23 @@ public class FlashCardsController : ControllerBase
             return Problem("Failed to create flashcard.");
         }
 
-        return CreatedAtAction(nameof(GetFlashcardByIdAsync), new { id = createdFlashcard.FlashcardId }, createdFlashcard);
+        //Map createdFlashcard to FlashcardDto
+        var AddFlashcardAsyncDto = new FlashcardDto
+        {
+            FlashcardId = createdFlashcard.FlashcardId,
+            Question = createdFlashcard.Question,
+            Answer = createdFlashcard.Answer,
+            SetId = createdFlashcard.SetId,
+            UserId = createdFlashcard.UserId
+        };
+
+        return CreatedAtAction(nameof(GetFlashcardByIdAsync), new { id = createdFlashcard.FlashcardId }, AddFlashcardAsyncDto);
 
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Flashcard>> UpdateFlashcardAsync(int id, UpdateFlashcardRequestDto flashcardDto)
+    public async Task<ActionResult<FlashcardDto>> UpdateFlashcardAsync(int id, UpdateFlashcardRequestDto flashcardDto)
     {
-
 
 
         var flashcard = new Flashcard
@@ -89,7 +122,19 @@ public class FlashCardsController : ControllerBase
             return NotFound(); // Flashcard with given ID not found
         }
 
-        return Ok(updatedFlashcard); // Return the updated Flashcard
+
+        //Map updatedFlashcard to FlashcardDto
+        var UpdateFlashcardAsyncDto = new FlashcardDto
+        {
+            FlashcardId = updatedFlashcard.FlashcardId,
+            Question = updatedFlashcard.Question,
+            Answer = updatedFlashcard.Answer,
+            SetId = updatedFlashcard.SetId,
+            UserId = updatedFlashcard.UserId
+        };
+
+
+        return Ok(UpdateFlashcardAsyncDto); // Return the updated Flashcard
     }
 
 
