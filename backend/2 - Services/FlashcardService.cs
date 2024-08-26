@@ -28,12 +28,10 @@ public class FlashCardService : IFlashCardService
         // Retrieve the flashcard by ID
         var flashcard = await _flashcardRepository.GetFlashcardByIdAsync(id);
 
-        // Handle null case if needed (e.g., logging or throwing exception)
+        // Handle null case
         if (flashcard == null)
-        { 
+        {
             return null;
-            // Optional: log the null case or throw a custom exception
-            // throw new NotFoundException($"Flashcard with ID {id} not found.");
         }
 
         return flashcard;
@@ -46,7 +44,7 @@ public class FlashCardService : IFlashCardService
 
     public async Task<Flashcard?> AddFlashcardAsync(Flashcard flashcard)
     {
-        // Optionally validate flashcard before adding
+        // Validate flashcard before adding
         if (flashcard == null)
         {
             throw new ArgumentNullException(nameof(flashcard));
@@ -62,32 +60,34 @@ public class FlashCardService : IFlashCardService
         {
             throw new ArgumentNullException(nameof(flashcard));
         }
-        
 
-        //validate user who wants to make update with user who owns Flashcard
-            //retrieve the flashcard by id from database
-                var existingFlashcard = await _flashcardRepository.GetFlashcardByIdAsync(flashcard.FlashcardId);
-                if (existingFlashcard == null){
-                    throw new ArgumentException("Could not find Flashcard by Id");
-                }
-            //compare user id from request to user id of flashcard owner from database
-                if(existingFlashcard.UserId != flashcard.UserId){
-                    throw new ArgumentException("This user does not own the Flashcard");
 
-                }
-              
-              //update existing flashcard with new information
-              existingFlashcard.Question = flashcard.Question;
-              existingFlashcard.Answer = flashcard.Answer;
+        //Validate user who wants to make update with user who owns Flashcard
+        //Retrieve the flashcard by id from database
+        var existingFlashcard = await _flashcardRepository.GetFlashcardByIdAsync(flashcard.FlashcardId);
+        if (existingFlashcard == null)
+        {
+            throw new ArgumentException("Could not find Flashcard by Id");
+        }
 
-              //pass updated existing flashcard to update method
-              var updatedFlashcard = await _flashcardRepository.UpdateFlashcardAsync(existingFlashcard);
+        //Compare user id from request to user id of flashcard owner from database
+        if (existingFlashcard.UserId != flashcard.UserId)
+        {
+            throw new ArgumentException("This user does not own the Flashcard");
+
+        }
+
+        //Update existing flashcard with new information
+        existingFlashcard.Question = flashcard.Question;
+        existingFlashcard.Answer = flashcard.Answer;
+
+        //Pass updated existing flashcard to update method
+        var updatedFlashcard = await _flashcardRepository.UpdateFlashcardAsync(existingFlashcard);
 
         // Handle case where flashcard could not be updated
         if (updatedFlashcard == null)
         {
-            // Optional: log or throw a custom exception
-            // throw new NotFoundException($"Flashcard with ID {flashcard.FlashcardId} not found.");
+
             throw new Exception("Unable to update Flashcard");
         }
 
@@ -96,7 +96,7 @@ public class FlashCardService : IFlashCardService
 
     public async Task<bool> DeleteFlashcardAsync(int id)
     {
-        // Optionally validate ID
+        // Validate ID
         if (id <= 0)
         {
             throw new ArgumentException("Invalid flashcard ID", nameof(id));
