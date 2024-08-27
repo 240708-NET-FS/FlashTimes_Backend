@@ -121,10 +121,12 @@ public class SetsController : ControllerBase
 
         //Return DTO response instead of whole Set entity because Set entity has sensitive info and could be too large
         //Reusing CreateSetDto for response
-        var responseDto = new CreateSetDto
+        var responseDto = new CreateSetResponseDto
         {
             UserId = result.UserId,
-            SetName = result.SetName
+            SetId = result.SetId,
+            SetName = result.SetName,
+
 
         };
 
