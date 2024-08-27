@@ -24,13 +24,21 @@ public class SetRepository : ISetRepository
     public async Task<IEnumerable<Set>> GetAllSetsAsync()
     {
         // Retrieve all sets from the database.
-        return await _context.Sets.Include(s => s.Author).ToListAsync();
+        return await _context.Sets
+            .Include(s => s.Author) // Eagerly load the related Author for each Set
+            .Include(s => s.Flashcards) // Eagerly load the related Flashcards for each Set
+                .ThenInclude(f => f.Author) // Eagerly load the Author related to each Flashcard
+            .ToListAsync();
+
     }
 
     public async Task<Set?> GetSetByIdAsync(int id)
     {
         // Retrieve a specific set by its ID, including the author information.
-        return await _context.Sets.Include(s => s.Author).FirstOrDefaultAsync(s => s.SetId == id);
+        return await _context.Sets
+             .Include(s => s.Flashcards) // Eagerly load the related Flashcards
+             .Include(s => s.Author) // Eagerly load the related Author
+             .FirstOrDefaultAsync(s => s.SetId == id);
     }
 
     public async Task<Set> CreateSetAsync(Set set)
