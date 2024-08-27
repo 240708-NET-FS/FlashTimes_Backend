@@ -221,10 +221,10 @@ var assemblies = [
   {
     "name": "backend",
     "classes": [
-      { "name": "FlashTimes.Services.AuthService", "rp": "backend_AuthService.html", "cl": 0, "ucl": 38, "cal": 38, "tl": 94, "cb": 0, "tb": 16, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "FlashTimes.Services.AuthService", "rp": "backend_AuthService.html", "cl": 36, "ucl": 2, "cal": 38, "tl": 94, "cb": 14, "tb": 16, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "FlashTimes.Services.FlashCardService", "rp": "backend_FlashCardService.html", "cl": 53, "ucl": 2, "cal": 55, "tl": 127, "cb": 17, "tb": 18, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "FlashTimes.Services.SetService", "rp": "backend_SetService.html", "cl": 0, "ucl": 24, "cal": 24, "tl": 67, "cb": 0, "tb": 2, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "FlashTimes.Services.UserService", "rp": "backend_UserService.html", "cl": 0, "ucl": 57, "cal": 57, "tl": 118, "cb": 0, "tb": 20, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "FlashTimes.Services.SetService", "rp": "backend_SetService.html", "cl": 24, "ucl": 0, "cal": 24, "tl": 67, "cb": 2, "tb": 2, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "FlashTimes.Services.UserService", "rp": "backend_UserService.html", "cl": 50, "ucl": 7, "cal": 57, "tl": 118, "cb": 15, "tb": 20, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
     ]},
 ];
 
@@ -241,20 +241,8 @@ var riskHotspots = [
   {
     "assembly": "backend", "class": "FlashTimes.Services.AuthService", "reportPath": "backend_AuthService.html", "methodName": "LoginAsync()", "methodShortName": "LoginAsync()", "fileIndex": 0, "line": 35,
     "metrics": [
-      { "value": 272, "exceeded": true },
+      { "value": 16.08, "exceeded": false },
       { "value": 16, "exceeded": true },
-    ]},
-  {
-    "assembly": "backend", "class": "FlashTimes.Services.UserService", "reportPath": "backend_UserService.html", "methodName": "RegisterUserAsync()", "methodShortName": "RegisterUserAsync()", "fileIndex": 0, "line": 32,
-    "metrics": [
-      { "value": 210, "exceeded": true },
-      { "value": 14, "exceeded": false },
-    ]},
-  {
-    "assembly": "backend", "class": "FlashTimes.Services.UserService", "reportPath": "backend_UserService.html", "methodName": "GetUserByIdAsync()", "methodShortName": "GetUserByIdAsync()", "fileIndex": 0, "line": 91,
-    "metrics": [
-      { "value": 42, "exceeded": true },
-      { "value": 6, "exceeded": false },
     ]},
 ];
 
