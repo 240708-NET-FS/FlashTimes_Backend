@@ -59,6 +59,8 @@ public class SetsController : ControllerBase
 
     }
 
+
+
     // GET: api/Set/5
     [HttpGet("{id}")]
     public async Task<ActionResult<SetDto>> GetSet(int id)
@@ -95,6 +97,8 @@ public class SetsController : ControllerBase
 
         return Ok(setDto);
     }
+
+
 
     // POST: api/Set
     [HttpPost]
@@ -159,8 +163,20 @@ public class SetsController : ControllerBase
             return NotFound(); // Return 404 if the set to update doesn't exist.
         }
 
-        return NoContent();
+        //Reuse CreateSetResponseDto here
+        var UpdateSetResponseDto = new CreateSetResponseDto
+        {
+            UserId = updatedSet.UserId,
+            SetId = updatedSet.SetId,
+            SetName = updatedSet.SetName
+
+        };
+
+
+        return Ok(UpdateSetResponseDto); //alternatively return NoContent();
     }
+
+
 
     // DELETE: api/Set/5
     [HttpDelete("{id}")]
