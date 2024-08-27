@@ -18,16 +18,50 @@ public class SetsController : ControllerBase
 
     // GET: api/Set
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Set>>> GetSets()
+    public async Task<ActionResult<IEnumerable<SetDto>>> GetSets()
     {
         // Retrieve all sets from the database.
         var sets = await _setService.GetAllSetsAsync();
-        return Ok(sets);
+
+        if (sets == null)
+        {
+            return NotFound(); // Return 404 if set is not found.
+        }
+
+
+
+        // Map each Set entity to SetDto
+        var setDtos = sets.Select(set => new SetDto
+        {
+            SetId = set.SetId,
+            SetName = set.SetName,
+            SetLength = set.Flashcards.Count,
+            Author = set.Author != null ? new SetDtoUserDto
+            {
+                UserId = set.Author.UserId,
+                UserName = set.Author.UserName,
+                FirstName = set.Author.FirstName,
+                LastName = set.Author.LastName
+
+            } : null,
+            Flashcards = set.Flashcards.Select(f => new SetDtoFlashcardDto
+            {
+                FlashcardId = f.FlashcardId,
+                Question = f.Question,
+                Answer = f.Answer,
+
+            }).ToList()
+        }).ToList();
+
+        return Ok(setDtos);
+
+
+
     }
 
     // GET: api/Set/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Set>> GetSet(int id)
+    public async Task<ActionResult<SetDto>> GetSet(int id)
     {
         // Retrieve a specific set by its ID.
         var set = await _setService.GetSetByIdAsync(id);
@@ -37,28 +71,27 @@ public class SetsController : ControllerBase
             return NotFound(); // Return 404 if set is not found.
         }
 
-        //Map set to GetSetByIdResponseDto to hide sensitive User hash and salt
-        var setDto = new GetSetByIdResponseDto
+
+        // Map the Set entity to SetDto
+        var setDto = new SetDto
         {
             SetId = set.SetId,
             SetName = set.SetName,
-            SetLength = set.SetLength,
-            Flashcards = set.Flashcards.Select(f => new FlashcardDto
-            {
-                FlashcardId = f.FlashcardId,
-                Question = f.Question,
-                Answer = f.Answer
-            }).ToList(),
-            Author = set.Author != null ? new UserDto //Check to see if Author is not null first
+            SetLength = set.Flashcards.Count,
+            Author = set.Author != null ? new SetDtoUserDto
             {
                 UserId = set.Author.UserId,
                 UserName = set.Author.UserName,
                 FirstName = set.Author.FirstName,
-                LastName = set.Author.LastName,
-                CreatedAt = set.Author.CreatedAt
-            } : null //If Author is null then return Author property with null
+                LastName = set.Author.LastName
+            } : null,
+            Flashcards = set.Flashcards.Select(f => new SetDtoFlashcardDto
+            {
+                FlashcardId = f.FlashcardId,
+                Question = f.Question,
+                Answer = f.Answer,
+            }).ToList()
         };
-
 
         return Ok(setDto);
     }
