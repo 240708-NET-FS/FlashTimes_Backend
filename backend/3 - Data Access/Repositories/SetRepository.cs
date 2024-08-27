@@ -74,7 +74,6 @@ public class SetRepository : ISetRepository
 
         // Update the fields of the existing set with the new values.
         existingSet.SetName = set.SetName;
-        existingSet.UserId = set.UserId;
 
         _context.Sets.Update(existingSet);
         await _context.SaveChangesAsync();
