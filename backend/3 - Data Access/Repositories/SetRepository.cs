@@ -65,6 +65,13 @@ public class SetRepository : ISetRepository
             throw new Exception("The specified user does not exist."); // Throw an exception if the user doesn't exist.
         }
 
+        //Check if user has permission
+        if (existingSet.UserId != set.UserId)
+        {
+            throw new Exception("The user does not own the set.");
+
+        }
+
         // Update the fields of the existing set with the new values.
         existingSet.SetName = set.SetName;
         existingSet.UserId = set.UserId;
