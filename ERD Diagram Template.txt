@@ -1,0 +1,17 @@
+User Entity:
+UserID (int)
+Username (string)
+Password (string)
+
+Set Entity:
+SetID (int)
+SetName (string)
+SetLength (int) (Optional, can be computed---basically how many cards in a set)
+UserID (int) (Foreign Key, linking to User)
+
+Flashcard Entity:
+CardID (int)
+SetID (int) (Foreign Key, linking to Set)
+Question (string)
+Answer (string)
+UserID (int) (Foreign Key, linking to User)

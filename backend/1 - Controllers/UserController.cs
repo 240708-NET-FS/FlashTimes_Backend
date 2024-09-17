@@ -50,7 +50,19 @@ public class UsersController : ControllerBase
             return NotFound();
         }
 
-        return Ok(user);
+        // Map the user entity to the DTO
+        var userResponse = new GetUserByIdResponseDto
+        {
+            UserId = user.UserId,
+            UserName = user.UserName,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            CreatedAt = user.CreatedAt
+        };
+
+        // Return the mapped DTO
+        return Ok(userResponse);
+
     }
 
 
